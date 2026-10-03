@@ -1,32 +1,52 @@
-SRC_DIR   	:= src
-BUILD_DIR 	:= build
-DEBUG_DIR 	:= debug
+CC 		= sdcc
+CFLAGS 	= -mmcs51 --model-small
+AS 		= sdas8051
+ASFLAGS = -plosgff
 
-AS 			:= asem
+DIR_SRC		= src
+DIR_DEBUG	= debug
+DIR_BUILD	= build
+DIR_OBJ 	= $(DIR_BUILD)/obj
+DIR_BIN 	= $(DIR_BUILD)/bin
 
-MAIN		:= main
-PROGRAM 	:= $(SRC_DIR)/$(MAIN).asm
-HEX 		:= $(BUILD_DIR)/$(MAIN).hex
-LST 		:= $(DEBUG_DIR)/$(MAIN).lst
+C_SRCS = $(shell find $(DIR_SRC) -type f -name "*.c")
+ASM_SRCS = $(shell find $(DIR_SRC) -type f -name "*.s")
+C_OBJS = $(patsubst $(DIR_SRC)/%.c, $(DIR_OBJ)/%.c.rel, $(C_SRCS))
+ASM_OBJS = $(patsubst $(DIR_SRC)/%.s, $(DIR_OBJ)/%.s.rel, $(ASM_SRCS))
 
-.PHONY: all
-all: dirs $(HEX)
+OBJS = $(C_OBJS)\
+	   $(ASM_OBJS)
 
+FIRMWARE = firmware
 
-$(HEX): dirs $(SRC)
-	@echo "[Assembling]"
-	@cd $(BUILD_DIR)
-	$(AS) -i $(SRC_DIR) $(PROGRAM) $(HEX) $(LST)
+all: $(FIRMWARE)
 
-.PHONY: dirs
-dirs:
-	@mkdir -p $(BUILD_DIR)
-	@mkdir -p $(DEBUG_DIR)
+$(FIRMWARE): $(OBJS)
+	@mkdir -p $(DIR_BIN)
+	@echo "[LD] Linking $< into $@"
+	$(CC)\
+		$(CFLAGS)\
+		-o $(DIR_BIN)/$@.ihx\
+		$(OBJS)
+	packihx $(DIR_BIN)/$@.ihx > $(DIR_BIN)/$@.hex
+		
+
+$(DIR_OBJ)/%.c.rel: $(DIR_SRC)/%.c
+	@mkdir -p $(DIR_OBJ)
+	@echo "[CC] Compiling $< into $@"
+	$(CC)\
+		$(CFLAGS)\
+		-o $@\
+		-c $<
+
+$(DIR_OBJ)/%.s.rel: $(DIR_SRC)/%.s
+	@mkdir -p $(DIR_OBJ)
+	@echo "[AS] Assembling $< into $@"
+	$(AS)\
+		$(ASFLAGS)\
+		-o $@\
+		$<
 
 .PHONY: clr
 clr:
-	@rm -rf $(BUILD_DIR)/*
-	@rm -rf $(DEBUG_DIR)/*
-
-.PHONY: rebuild
-rebuild: clean all
+	rm -rf $(DIR_BUILD) $(DIR_DEBUG)
