@@ -1,7 +1,17 @@
+.module     lcd
 
-.module lcd
-.globl lcd_dly
-lcd_dly:        push    a
+.area       DSEG(DATA)
+
+.area       CSEG(CODE)
+
+.globl _lcd_dly
+.globl _lcd_config
+.globl _lcd_clr
+.globl _lcd_wchr
+.globl _lcd_wcmd
+.globl _lcd_wstr
+
+_lcd_dly:       push    a
                 mov     a, #0x40
 
 lcd_dly_loop:   dec     a
@@ -10,37 +20,35 @@ lcd_dly_loop:   dec     a
                 pop     a
                 ret
 
-lcd_config:     push    a
+_lcd_config:    push    a
                 
                 mov     A, #0x2A
-                acall   lcd_wcmd
+                acall   _lcd_wcmd
                 mov     A, #0x06
-                acall   lcd_wcmd
+                acall   _lcd_wcmd
                 mov     A, #0x0F
-                acall   lcd_wcmd
+                acall   _lcd_wcmd
 
                 pop     acc
                 ret
 
-.globl lcd_clr
-lcd_clr:        push    acc
+_lcd_clr:       push    acc
                 mov     acc, #0x01
-                acall   lcd_wcmd
+                acall   _lcd_wcmd
                 mov     acc, #0x80
-                acall   lcd_wcmd
+                acall   _lcd_wcmd
                 pop     acc
                 ret
 
-.globl lcd_wchr
-lcd_wchr:       push    acc
+_lcd_wchr:      push    acc
                 mov     a,    0x00
                 anl     a,    #0xF0
                 orl     a,    #0x0C
                 mov     p1,     a
-                acall   lcd_dly
+                acall   _lcd_dly
                 anl     a,      #0xF0
                 mov     p1,     a
-                acall   lcd_dly
+                acall   _lcd_dly
 
                 mov     0x00,    a
                 swap    a
@@ -48,26 +56,25 @@ lcd_wchr:       push    acc
                 anl     a,      #0xF0
                 orl     a,      #0x0C
                 mov     p1,     a
-                acall   lcd_dly
+                acall   _lcd_dly
 
                 anl     a,      #0xF4
                 mov     p1,     a
-                acall   lcd_dly
+                acall   _lcd_dly
 
                 pop     acc    
                 ret
 
-.globl lcd_wcmd
-lcd_wcmd:       push    acc
+_lcd_wcmd:      push    acc
 
                 mov     a,      0x00
                 anl     a,      #0xF0
                 orl     a,      #0x04
                 mov     p1,     a
-                acall   lcd_dly
+                acall   _lcd_dly
                 anl     a,      #0xF0
                 mov     p1,     a
-                acall   lcd_dly
+                acall   _lcd_dly
 
                 mov     0x00,    a
                 swap    a
@@ -75,16 +82,15 @@ lcd_wcmd:       push    acc
                 anl     a,      #0xF0
                 orl     a,      #0x04
                 mov     p1,     a
-                acall   lcd_dly
+                acall   _lcd_dly
 
                 anl     a,      #0xF0
                 mov     p1,     a
-                acall   lcd_dly
+                acall   _lcd_dly
 
                 pop     acc
                 ret
 
-.globl lcd_wstr
-lcd_wstr:       push    acc
+_lcd_wstr:      push    acc
                 pop     acc
                 ret
