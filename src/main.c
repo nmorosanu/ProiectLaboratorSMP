@@ -6,7 +6,6 @@ void main(void)
 {
     while (1)
     {
-        P1_0 = !P1_0;
         lcd_dly();
     }
 }
