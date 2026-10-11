@@ -26,7 +26,7 @@ all: $(FIRMWARE)
 
 $(FIRMWARE): $(OBJS)
 	@mkdir -p $(DIR_BIN)
-	@echo "[LD] Linking $< into $@"
+	@echo "[LD] $< > $@"
 	$(LD)\
 		$(LDFLAGS)\
 		$(DIR_BIN)/$(FIRMWARE).ihx $(OBJS)
@@ -35,7 +35,7 @@ $(FIRMWARE): $(OBJS)
 
 $(DIR_OBJ)/%.c.rel: $(DIR_SRC)/%.c
 	@mkdir -p $(DIR_OBJ)
-	@echo "[CC] Compiling $< into $@"
+	@echo "[CC] $< > $@"
 	$(CC)\
 		$(CFLAGS)\
 		-o $@\
@@ -43,7 +43,7 @@ $(DIR_OBJ)/%.c.rel: $(DIR_SRC)/%.c
 
 $(DIR_OBJ)/%.s.rel: $(DIR_SRC)/%.s
 	@mkdir -p $(DIR_OBJ)
-	@echo "[AS] Assembling $< into $@"
+	@echo "[AS] $< > $@"
 	$(AS)\
 		$(ASFLAGS)\
 		-o $@\

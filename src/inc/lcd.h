@@ -1,8 +1,7 @@
 #pragma once
 
-void lcd_delay(char, char);
-void lcd_init(void);
-void lcd_clear(void);
-void lcd_write_byte(char);
-void lcd_command(char cmd);
-void lcd_write_string(void);
+extern void lcd_delay(char);
+extern void lcd_init(void);
+extern void lcd_clear(void);
+extern void lcd_command(char);
+extern void lcd_write_byte(char);

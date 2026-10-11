@@ -4,7 +4,6 @@
 .org 0x0000
     ljmp start
 
-
 .area CSEG (CODE)
 start:
     mov  SP, #0x80
